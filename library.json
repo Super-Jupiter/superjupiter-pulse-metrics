@@ -1,6 +1,6 @@
 {
   "name": "SuperJupiterPulseMetrics",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Pulse counts and interval-derived rates with bounce and timeout reporting. Portable C++11 by SuperJupiter. Hardware validation pending.",
   "keywords": [
     "sensor",

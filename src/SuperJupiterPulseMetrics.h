@@ -2,34 +2,33 @@
 // Copyright (c) 2026 SuperJupiter
 #ifndef SUPERJUPITER_PULSE_METRICS_H
 #define SUPERJUPITER_PULSE_METRICS_H
-#if defined(__FAST_MATH__) || (defined(__FINITE_MATH_ONLY__) && __FINITE_MATH_ONLY__ > 0)
+#if defined(__FAST_MATH__) ||                                                  \
+    (defined(__FINITE_MATH_ONLY__) && __FINITE_MATH_ONLY__ > 0)
 #error "SuperJupiter requires IEEE non-finite checks; disable fast-math"
 #endif
 #include <float.h>
-#include <math.h>
 #include <stddef.h>
 #include <stdint.h>
-#define SUPERJUPITER_PULSE_METRICS_VERSION "0.1.0"
+#define SUPERJUPITER_PULSE_METRICS_VERSION "0.1.1"
 namespace superjupiter {
 namespace pulse_metrics {
 
 namespace detail {
-inline bool finite(double value) { return value == value && value >= -DBL_MAX && value <= DBL_MAX; }
-inline double oneMinusExpNegative(double ratio) {
-  // Stable at small elapsed/tau without requiring AVR's unavailable expm1.
-  if (ratio < 0.01) {
-    double term = ratio, total = ratio;
-    for (unsigned n = 2; n <= 12; ++n) {
-      term *= -ratio / n;
-      total += term;
-    }
-    return total;
-  }
-  return 1 - ::exp(-ratio);
+inline bool finite(double value) {
+  return value == value && value >= -DBL_MAX && value <= DBL_MAX;
 }
 } // namespace detail
 
-enum class Status { First, Ok, Bounce, InvalidTime, InvalidConfig, NoRate, TimedOut, Overflow };
+enum class Status {
+  First,
+  Ok,
+  Bounce,
+  InvalidTime,
+  InvalidConfig,
+  NoRate,
+  TimedOut,
+  Overflow
+};
 struct Config {
   uint32_t minIntervalUs, timeoutUs;
   double unitsPerPulse;
@@ -47,10 +46,12 @@ class PulseMetrics {
   uint32_t last_, interval_;
 
 public:
-  explicit PulseMetrics(Config c = Config()) : c_(c), count_(0), last_(0), interval_(0) {}
+  explicit PulseMetrics(Config c = Config())
+      : c_(c), count_(0), last_(0), interval_(0) {}
   bool valid() const {
     return c_.minIntervalUs > 0 && c_.timeoutUs >= c_.minIntervalUs &&
-           c_.timeoutUs < 0x80000000UL && detail::finite(c_.unitsPerPulse) && c_.unitsPerPulse > 0;
+           c_.timeoutUs < 0x80000000UL && detail::finite(c_.unitsPerPulse) &&
+           c_.unitsPerPulse > 0;
   }
   Result poll(uint32_t nowUs) const {
     if (!valid())
