@@ -1,4 +1,5 @@
 #include <SuperJupiterPulseMetrics.h>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <new>
